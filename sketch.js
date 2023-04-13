@@ -1,21 +1,24 @@
-let FixedBar = 180;
-let AttachedBar = 80;
-let MassFixedObject = 10;
-let MassAttachedObject = 7;
+let fixedBar = 180;
+let attachedBar = 180;
+let massFixedObject = 1000;
+let massAttachedObject = 1000;
 
-//let a1 = 0; //angle of fixed, defining the var, but don't need to?
-//let a2 = 0; //angle of attached
+let a1 = 0; 
+let a2 = 0; 
 
-let AngularVelocityFixedObject = 0;
-//a1_v = AngularVelocityFixedObject
-let AngularVelocityAttachedObject = 0;
-//a2_v = AngularVelocityAttachedObject
-//defining the variables? use them later in code with actual values
-let g = 0.2;
-//gravitational acceleration, if use 9.81, the simulation moves way too quickly
+let angularVelocityFixedObject = 0;
 
-//let px2 = -1; //? do we need to define it with og value when it'll be diff values along motion anyway?
-//let py2 = -1;
+let a1_v = angularVelocityFixedObject;
+
+let angularVelocityAttachedObject = 0;
+
+let a2_v = angularVelocityAttachedObject;
+
+let gravitationalAcceleration = 0.981;
+
+let px2 = 0; 
+let py2 = 0;
+
 let cx, cy;
 
 let buffer;
@@ -23,61 +26,87 @@ let buffer;
 function setup() {
   createCanvas(900, 800);
   pixelDensity(1);
-  a1 = PI / 2; //change initial angle of motion
+
+  /*
+  For small angles, a pendulum behaves like a linear system (see Simple Pendulum). 
+  When the angles are small in the Double Pendulum, the system behaves like the linear Double Spring.
+
+  This is because the motion is determined by simple sine and cosine functions.
+  For large angles, the pendulum is non-linear and the phase graph becomes much more complex.
+
+  a1 = fixedBarAngle
+  a2 = attachedBarAngle
+  */
+
+  a1 = PI / 2; 
   a2 = PI / 2;
-  //these are the starting angles of the bars
+
+  //cx, cy - coordinates of origin of the the system of fixed bar
   cx = width / 2;
   cy = height / 4;
-  //cx, cy - coordinates of origin of the the system of fixed bar
+
+  
   buffer = createGraphics(width, height);
   buffer.background(225);
   buffer.translate(cx, cy);
+
 }
 
 function draw() {
+
   background(175);
   imageMode(CORNER);
   image(buffer, 0, 0, width, height);
 
-  let num1 = -g * (2 * MassFixedObject + MassAttachedObject) * sin(a1);
-  let num2 = -MassAttachedObject * g * sin(a1 - 2 * a2);
-  let num3 = -2 * sin(a1 - a2) * MassAttachedObject;
-  let num4 = AngularVelocityAttachedObject * AngularVelocityAttachedObject * AttachedBar + AngularVelocityFixedObject * AngularVelocityFixedObject * FixedBar * cos(a1 - a2);
-  let den = FixedBar * (2 * MassFixedObject + MassAttachedObject - MassAttachedObject * cos(2 * a1 - 2 * a2));
-  let a1_a = (num1 + num2 + num3 * num4) / den;
 
-  num1 = 2 * sin(a1 - a2);
-  num2 = (AngularVelocityFixedObject * AngularVelocityFixedObject * FixedBar * (MassFixedObject + MassAttachedObject));
-  num3 = g * (MassFixedObject + MassAttachedObject) * cos(a1);
-  num4 = AngularVelocityAttachedObject * AngularVelocityAttachedObject * AttachedBar * MassAttachedObject * cos(a1 - a2);
-  den = AttachedBar * (2 * MassFixedObject + MassAttachedObject - MassAttachedObject * cos(2 * a1 - 2 * a2));
-  let a2_a = (num1 * (num2 + num3 + num4)) / den;
+  /*
+    Equation of Motion of the angular acceleration of the fixedBar
+  */
+
+  let num1 = -gravitationalAcceleration * (2 * massFixedObject + massAttachedObject) * sin(a1);
+  let num2 = -massAttachedObject * gravitationalAcceleration * sin(a1 - 2 * a2);
+  let num3 = -2 * sin(a1 - a2) * massAttachedObject;
+  let num4 = angularVelocityAttachedObject * angularVelocityAttachedObject * attachedBar + angularVelocityFixedObject * angularVelocityFixedObject * fixedBar * cos(a1 - a2);
+  let den = fixedBar * (2 * massFixedObject + massAttachedObject - massAttachedObject * cos(2 * a1 - 2 * a2));
+  let angularAccelerationFixedBar = (num1 + num2 + num3 * num4) / den;
+
+  /*
+    Equation of Motion of the angular acceleration of the attachedBar
+  */
+
+ 
+  num1 = 2 * sin(a1 - a2); 
+  num2 = (angularVelocityFixedObject * angularVelocityFixedObject * fixedBar * (massFixedObject + massAttachedObject));
+  num3 = gravitationalAcceleration * (massFixedObject + massAttachedObject) * cos(a1);
+  num4 = angularVelocityAttachedObject * angularVelocityAttachedObject * attachedBar * massAttachedObject * cos(a1 - a2);
+  den = attachedBar * (2 * massFixedObject + massAttachedObject - massAttachedObject * cos(2 * a1 - 2 * a2));
+  let angularAccelerationAttachedBar = (num1 * (num2 + num3 + num4)) / den;
 
   translate(cx, cy);
   stroke(0);
   strokeWeight(2);
 
-  let x1 = FixedBar * sin(a1);
-  let y1 = FixedBar * cos(a1);
+  let x1 = fixedBar * sin(a1);
+  let y1 = fixedBar * cos(a1);
 
-  let x2 = x1 + AttachedBar * sin(a2);
-  let y2 = y1 + AttachedBar * cos(a2);
+  let x2 = x1 + attachedBar * sin(a2);
+  let y2 = y1 + attachedBar * cos(a2);
 
   line(0, 0, x1, y1);
   fill(0);
-  ellipse(x1, y1, MassFixedObject, MassFixedObject);
+  ellipse(x1, y1, 10, 10);
 
   line(x1, y1, x2, y2);
   fill(0);
-  ellipse(x2, y2, MassAttachedObject, MassAttachedObject);
+  ellipse(x2, y2, 10, 10);
 
-  AngularVelocityFixedObject += a1_a;
-  AngularVelocityAttachedObject += a2_a;
-  a1 += AngularVelocityFixedObject;
-  a2 += AngularVelocityAttachedObject;
+  angularVelocityFixedObject += angularAccelerationFixedBar;
+  angularVelocityAttachedObject += angularAccelerationAttachedBar;
+  a1 += angularVelocityFixedObject;
+  a2 += angularVelocityAttachedObject;
 
-  //AngularVelocityFixedObject *= 0.99; //used to assign arbitrary values, not needed for the actual computation of double pendulum, i.e. it isn't the right motion we're after
-  //AngularVelocityAttachedObject *= 0.99;
+  //angularVelocityFixedObject *= 0.99; //used to assign arbitrary values, not needed for the actual computation of double pendulum, i.e. it isn't the right motion we're after
+  //angularVelocityAttachedObject *= 0.99;
 
   buffer.stroke(0);
   if (frameCount > 1) {
@@ -86,4 +115,7 @@ function draw() {
 
   px2 = x2; //point being made as pendulum moves - trajectory of motion
   py2 = y2;
+  
+  console.log("Values of fixedBar", x1, y1);
+  console.log("Values of attachedBar", x2, y2);
 }
