@@ -24,7 +24,8 @@ let cx, cy;
 let buffer;
 
 function setup() {
-  createCanvas(900, 800);
+  var pendulumCanvas = createCanvas(800, 800);
+  pendulumCanvas.parent("pendulumCanvas");
   pixelDensity(1);
 
   /*
