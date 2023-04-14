@@ -14,7 +14,7 @@ let angularVelocityAttachedObject = 0;
 
 let a2_v = angularVelocityAttachedObject;
 
-let gravitationalAcceleration = 9.81;
+let gravitationalAcceleration = 0.981;
 
 let px2 = 0; 
 let py2 = 0;
@@ -39,8 +39,9 @@ function setup() {
   a2 = attachedBarAngle
   */
 
-  a1 = PI / 2; 
-  a2 = PI / 2;
+  Change = PI / 180;
+  a1 = 90*Change; 
+  a2 = 90*Change;
 
   //cx, cy - coordinates of origin of the the system of fixed bar
   cx = width / 2;
@@ -68,12 +69,12 @@ function setup() {
 //let val = random(attachedBar);
 //attachedBar = val;
 //}
+
 function draw() {
 
   background(175);
   imageMode(CORNER);
   image(buffer, 0, 0, width, height);
-
 
   /*
     Equation of Motion of the angular acceleration of the fixedBar
@@ -89,24 +90,23 @@ function draw() {
   /*
     Equation of Motion of the angular acceleration of the attachedBar
   */
-
  
   num1 = 2 * sin(a1 - a2); 
   num2 = (angularVelocityFixedObject * angularVelocityFixedObject * fixedBar * (massFixedObject + massAttachedObject));
-  num3 = gravitationalAcceleration * (massFixedObject + massAttachedObject) * cos(a1);
-  num4 = angularVelocityAttachedObject * angularVelocityAttachedObject * attachedBar * massAttachedObject * cos(a1 - a2);
-  den = attachedBar * (2 * massFixedObject + massAttachedObject - massAttachedObject * cos(2 * a1 - 2 * a2));
+  num3 = gravitationalAcceleration * (massFixedObject + massAttachedObject) * math.cos(a1);
+  num4 = angularVelocityAttachedObject * angularVelocityAttachedObject * attachedBar * massAttachedObject * math.cos(a1 - a2);
+  den = attachedBar * (2 * massFixedObject + massAttachedObject - massAttachedObject * math.cos(2 * a1 - 2 * a2));
   let angularAccelerationAttachedBar = (num1 * (num2 + num3 + num4)) / den;
 
   translate(cx, cy);
   stroke(0);
   strokeWeight(2);
 
-  let x1 = fixedBar * sin(a1);
-  let y1 = fixedBar * cos(a1);
+  let x1 = fixedBar * math.sin(a1);
+  let y1 = fixedBar * math.cos(a1);
 
-  let x2 = x1 + attachedBar * sin(a2);
-  let y2 = y1 + attachedBar * cos(a2);
+  let x2 = x1 + attachedBar * math.sin(a2);
+  let y2 = y1 + attachedBar * math.cos(a2);
 
   line(0, 0, x1, y1);
   fill(0);
@@ -121,8 +121,8 @@ function draw() {
   a1 += angularVelocityFixedObject;
   a2 += angularVelocityAttachedObject;
 
-  angularVelocityFixedObject *= 0.981; // this is the dampening
-  angularVelocityAttachedObject *= 0.981;
+  angularVelocityFixedObject *= 0.9999; // this is the dampening
+  angularVelocityAttachedObject *= 0.9999;
 
   buffer.stroke(0);
   if (frameCount > 1) {
@@ -131,9 +131,6 @@ function draw() {
 
   px2 = x2; //point being made as pendulum moves - trajectory of motion
   py2 = y2;
-
-
-
   
   console.log("Values of fixedBar", x1, y1);
   console.log("Values of attachedBar", x2, y2);
