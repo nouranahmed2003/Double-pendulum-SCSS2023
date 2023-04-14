@@ -80,18 +80,18 @@ function draw() {
     Equation of Motion of the angular acceleration of the fixedBar
   */
 
-  let num1 = -gravitationalAcceleration * (2 * massFixedObject + massAttachedObject) * sin(a1);
-  let num2 = -massAttachedObject * gravitationalAcceleration * sin(a1 - 2 * a2);
-  let num3 = -2 * sin(a1 - a2) * massAttachedObject;
-  let num4 = angularVelocityAttachedObject * angularVelocityAttachedObject * attachedBar + angularVelocityFixedObject * angularVelocityFixedObject * fixedBar * cos(a1 - a2);
-  let den = fixedBar * (2 * massFixedObject + massAttachedObject - massAttachedObject * cos(2 * a1 - 2 * a2));
+  let num1 = -gravitationalAcceleration * (2 * massFixedObject + massAttachedObject) * math.sin(a1);
+  let num2 = -massAttachedObject * gravitationalAcceleration * math.sin(a1 - 2 * a2);
+  let num3 = -2 * math.sin(a1 - a2) * massAttachedObject;
+  let num4 = angularVelocityAttachedObject * angularVelocityAttachedObject * attachedBar + angularVelocityFixedObject * angularVelocityFixedObject * fixedBar * math.cos(a1 - a2);
+  let den = fixedBar * (2 * massFixedObject + massAttachedObject - massAttachedObject * math.cos(2 * a1 - 2 * a2));
   let angularAccelerationFixedBar = (num1 + num2 + num3 * num4) / den;
 
   /*
     Equation of Motion of the angular acceleration of the attachedBar
   */
  
-  num1 = 2 * sin(a1 - a2); 
+  num1 = 2 * math.sin(a1 - a2); 
   num2 = (angularVelocityFixedObject * angularVelocityFixedObject * fixedBar * (massFixedObject + massAttachedObject));
   num3 = gravitationalAcceleration * (massFixedObject + massAttachedObject) * math.cos(a1);
   num4 = angularVelocityAttachedObject * angularVelocityAttachedObject * attachedBar * massAttachedObject * math.cos(a1 - a2);
