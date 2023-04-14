@@ -1,5 +1,5 @@
-let fixedBar = 180;
-let attachedBar = 180;
+let fixedBar = 230;
+let attachedBar = 120;
 let massFixedObject = 1000;
 let massAttachedObject = 1000;
 
@@ -14,7 +14,7 @@ let angularVelocityAttachedObject = 0;
 
 let a2_v = angularVelocityAttachedObject;
 
-let gravitationalAcceleration = 0.981;
+let gravitationalAcceleration = 9.81;
 
 let px2 = 0; 
 let py2 = 0;
@@ -46,13 +46,28 @@ function setup() {
   cx = width / 2;
   cy = height / 4;
 
-  
+
   buffer = createGraphics(width, height);
-  buffer.background(225);
+  buffer.background(255);
   buffer.translate(cx, cy);
 
 }
 
+//let button;
+//function setup() {
+//createCanvas(100, 100);
+//background(0);
+//button = createButton('help me');
+//a = 50+cx;
+//b = 50+cy;
+//button.position(0, 0);
+//button.mousePressed(changeBG);
+//}
+
+//function changeBG() {
+//let val = random(attachedBar);
+//attachedBar = val;
+//}
 function draw() {
 
   background(175);
@@ -106,8 +121,8 @@ function draw() {
   a1 += angularVelocityFixedObject;
   a2 += angularVelocityAttachedObject;
 
-  //angularVelocityFixedObject *= 0.99; //used to assign arbitrary values, not needed for the actual computation of double pendulum, i.e. it isn't the right motion we're after
-  //angularVelocityAttachedObject *= 0.99;
+  angularVelocityFixedObject *= 0.981; // this is the dampening
+  angularVelocityAttachedObject *= 0.981;
 
   buffer.stroke(0);
   if (frameCount > 1) {
@@ -116,7 +131,11 @@ function draw() {
 
   px2 = x2; //point being made as pendulum moves - trajectory of motion
   py2 = y2;
+
+
+
   
   console.log("Values of fixedBar", x1, y1);
   console.log("Values of attachedBar", x2, y2);
 }
+
