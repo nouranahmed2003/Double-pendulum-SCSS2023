@@ -106,7 +106,7 @@ function draw() {
   a1 += angularVelocityFixedObject;
   a2 += angularVelocityAttachedObject;
 
-  //angularVelocityFixedObject *= 0.99; //used to assign arbitrary values, not needed for the actual computation of double pendulum, i.e. it isn't the right motion we're after
+  angularVelocityFixedObject *= 0.99; // this is the dampening
   //angularVelocityAttachedObject *= 0.99;
 
   buffer.stroke(0);
