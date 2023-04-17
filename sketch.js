@@ -23,6 +23,7 @@ let cx, cy;
 
 let buffer;
 
+
 function setup() {
   var pendulumCanvas = createCanvas(800, 800);
   pendulumCanvas.parent("pendulumCanvas");
@@ -39,9 +40,23 @@ function setup() {
   a2 = attachedBarAngle
   */
 
+ 
+
+
+  
   Change = PI / 180;
   a1 = 90*Change; 
   a2 = 90*Change;
+
+
+
+  //if (a2 != 0) {
+  //  a2 = 90*Change;
+  //}
+  //a2 = 90*Change;
+  //endif 
+
+
 
   //cx, cy - coordinates of origin of the the system of fixed bar
   cx = width / 2;
@@ -54,21 +69,7 @@ function setup() {
 
 }
 
-//let button;
-//function setup() {
-//createCanvas(100, 100);
-//background(0);
-//button = createButton('help me');
-//a = 50+cx;
-//b = 50+cy;
-//button.position(0, 0);
-//button.mousePressed(changeBG);
-//}
 
-//function changeBG() {
-//let val = random(attachedBar);
-//attachedBar = val;
-//}
 
 function draw() {
 
@@ -80,6 +81,69 @@ function draw() {
     Equation of Motion of the angular acceleration of the fixedBar
   */
 
+  // let num1 = -gravitationalAcceleration * (2 * massFixedObject + massAttachedObject) * math.sin(a1);
+  // let num2 = -massAttachedObject * gravitationalAcceleration * math.sin(a1 - 2 * a2);
+  // let num3 = -2 * math.sin(a1 - a2) * massAttachedObject;
+  // let num4 = angularVelocityAttachedObject * angularVelocityAttachedObject * attachedBar + angularVelocityFixedObject * angularVelocityFixedObject * fixedBar * math.cos(a1 - a2);
+  // let den = fixedBar * (2 * massFixedObject + massAttachedObject - massAttachedObject * math.cos(2 * a1 - 2 * a2));
+  // let angularAccelerationFixedBar = (num1 + num2 + num3 * num4) / den;
+
+  // /*
+  //   Equation of Motion of the angular acceleration of the attachedBar
+  // */
+ 
+  // num1 = 2 * math.sin(a1 - a2); 
+  // num2 = (angularVelocityFixedObject * angularVelocityFixedObject * fixedBar * (massFixedObject + massAttachedObject));
+  // num3 = gravitationalAcceleration * (massFixedObject + massAttachedObject) * math.cos(a1);
+  // num4 = angularVelocityAttachedObject * angularVelocityAttachedObject * attachedBar * massAttachedObject * math.cos(a1 - a2);
+  // den = attachedBar * (2 * massFixedObject + massAttachedObject - massAttachedObject * math.cos(2 * a1 - 2 * a2));
+  // let angularAccelerationAttachedBar = (num1 * (num2 + num3 + num4)) / den;
+
+  document.getElementById("btn").addEventListener("click", PendulumButton);
+
+  var a3 = parseInt(document.getElementById("Theta1").value);
+  var a4 = parseInt(document.getElementById("Theta2").value);
+
+  function PendulumButton() {
+   
+  //alert("This function is being called")
+  // var a3 = parseInt(document.getElementById("Theta1").value);
+  
+  // var a4 = parseInt(document.getElementById("Theta2").value);
+
+  a1 = a3*Change;
+  a2 = a4*Change;
+
+  num1 = -gravitationalAcceleration * (2 * massFixedObject + massAttachedObject) * math.sin(a1);
+  num2 = -massAttachedObject * gravitationalAcceleration * math.sin(a1 - 2 * a2);
+  num3 = -2 * math.sin(a1 - a2) * massAttachedObject;
+  num4 = angularVelocityAttachedObject * angularVelocityAttachedObject * attachedBar + angularVelocityFixedObject * angularVelocityFixedObject * fixedBar * math.cos(a1 - a2);
+  den = fixedBar * (2 * massFixedObject + massAttachedObject - massAttachedObject * math.cos(2 * a1 - 2 * a2));
+  angularAccelerationFixedBar = (num1 + num2 + num3 * num4) / den;
+
+  num1 = 2 * math.sin(a1 - a2); 
+  num2 = (angularVelocityFixedObject * angularVelocityFixedObject * fixedBar * (massFixedObject + massAttachedObject));
+  num3 = gravitationalAcceleration * (massFixedObject + massAttachedObject) * math.cos(a1);
+  num4 = angularVelocityAttachedObject * angularVelocityAttachedObject * attachedBar * massAttachedObject * math.cos(a1 - a2);
+  den = attachedBar * (2 * massFixedObject + massAttachedObject - massAttachedObject * math.cos(2 * a1 - 2 * a2));
+  angularAccelerationAttachedBar = (num1 * (num2 + num3 + num4)) / den;
+
+
+  // a1 = a3*Change; 
+  // a2 = a4*Change;
+
+  }
+
+
+  if (a3 != null) {
+    a1 = a3*Change; 
+    a2 = a4*Change;
+  } else {
+    a1 = 90*Change
+    a2 = 90*Change;
+
+  }
+  
   let num1 = -gravitationalAcceleration * (2 * massFixedObject + massAttachedObject) * math.sin(a1);
   let num2 = -massAttachedObject * gravitationalAcceleration * math.sin(a1 - 2 * a2);
   let num3 = -2 * math.sin(a1 - a2) * massAttachedObject;
@@ -97,6 +161,8 @@ function draw() {
   num4 = angularVelocityAttachedObject * angularVelocityAttachedObject * attachedBar * massAttachedObject * math.cos(a1 - a2);
   den = attachedBar * (2 * massFixedObject + massAttachedObject - massAttachedObject * math.cos(2 * a1 - 2 * a2));
   let angularAccelerationAttachedBar = (num1 * (num2 + num3 + num4)) / den;
+
+  
 
   translate(cx, cy);
   stroke(0);
@@ -132,7 +198,7 @@ function draw() {
   px2 = x2; //point being made as pendulum moves - trajectory of motion
   py2 = y2;
   
-  console.log("Values of fixedBar", x1, y1);
-  console.log("Values of attachedBar", x2, y2);
+  //console.log("Values of fixedBar", x1, y1);
+  //console.log("Values of attachedBar", x2, y2);
 }
 
