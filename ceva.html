@@ -9,10 +9,23 @@
     <meta charset="utf-8" />
     <script src="sketch.js"></script>
   </head>
-
-  <body> 
-    <div id="pendulumCanvas"></div>   
-    <p><a href="index.html" class="button">Click me to refresh</a></p>
+  <body>   
+    <p><a href="index.html" class="button">Click me</a></p>
+    <form>
+      <p>
+        <label for="Theta1">Theta 1</label><br>
+        <input type="number" id="Theta1" name="Theta1">
+      </p>
+      <p>
+        <label for="Theta2">Theta 2</label><br>
+        <input type="number" id="Theta2" name="Theta2">
+      </p>
+      <p>
+        <button onclick="openIt()">
+            Start simulation
+        </button>
+      </p>
+    </form>
   </body>
 
 </html>
