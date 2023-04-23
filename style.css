@@ -1,8 +1,24 @@
-html, body {
-    margin: 0;
-    padding: 0;
+
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@100&display=swap");
+
+*{
+	font-family: 'Roboto', sans-serif;
 }
-canvas {
-    display: block;
-    margin: auto;
+h1,
+h2,
+h3 {
+	font-weight: 700;
 }
+h4,
+h5,
+h6 {
+	font-weight: 600;
+}
+.rounded-5 {
+	border-radius: 1rem;
+}
+.form-control-color {
+	max-width: 100% !important;
+}
+
+
