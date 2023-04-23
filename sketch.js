@@ -32,13 +32,6 @@ let py2 = 0;
 let cx, cy;
 
 let buffer;
-let pendulumAnimation = true;
-
-/*
-  Overriding values if input is found
-*/
-let entry1;
-
 
 function setup() {
   var pendulumCanvas = createCanvas(800, 800);
@@ -63,15 +56,6 @@ function setup() {
   buffer = createGraphics(width, height);
   buffer.background(255);
   buffer.translate(cx, cy);
-
-  createSpan("What's your name? "); //label for entry1
-  // createInput([value], [type])
-  // type: "text" (default), "number",
-  // "date", "password", "email", etc.
-  entry1 = createInput();
-  //If text in the entry field changes, call
-  //the entryCallback function.
-  entry1.changed(entryCallback);
 
 }
 
@@ -163,17 +147,5 @@ function eqmAngularAccelerationAttachedBar(){
   return angularAccelerationAttachedBar;
 }
 
-function openIt(){
-  const url = "/index.html";
-  window.open(url,"something","width=800,height=800");
-  
-}
 
-//callback function for entry1
-function entryCallback() {
-  for (let i = 0; i < 25; i++) {
-    text(entry1.value(), random(width),
-          random(height));
-  }
 
-}
