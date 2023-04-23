@@ -1,204 +1,163 @@
-let fixedBar = 230;
-let attachedBar = 120;
-let massFixedObject = 1000;
-let massAttachedObject = 1000;
+let gravity = 0.981;
+let trails = [];
+let alpha = 0;
+let xPosition = undefined;
+let canvas = undefined;
+const FPS = 60;
 
-let a1 = 0; 
-let a2 = 0; 
+class BallA {
+	constructor(mass, length) {
+		this.mass = mass;
+		this.length = length;
+		this.angle = 200;
+		this.xPosition = 0;
+		this.yPosition = 0;
+		this.angularVelocity = 0.01;
+	}
+	draw() {
+		this.xPosition = this.length * sin(this.angle);
+		this.yPosition = this.length * cos(this.angle);
 
-let angularVelocityFixedObject = 0;
+		line(0, 0, this.xPosition, this.yPosition);
+		ellipse(this.xPosition, this.yPosition, 10, 10);
+	}
+}
 
-let a1_v = angularVelocityFixedObject;
+class BallB {
+	constructor(mass, length) {
+		this.mass = mass;
+		this.length = length;
 
-let angularVelocityAttachedObject = 0;
+		this.angle = 200;
+		this.xPosition = 0;
+		this.yPosition = 0;
+		this.angularVelocity = 0.02;
+	}
+	draw(ballAX, ballAY) {
+		this.xPosition = ballAX + this.length * sin(this.angle);
+		this.yPosition = ballAY + this.length * cos(this.angle);
 
-let a2_v = angularVelocityAttachedObject;
+		line(ballAX, ballAY, this.xPosition, this.yPosition);
+		ellipse(this.xPosition, this.yPosition, 10, 10);
+	}
+}
 
-let gravitationalAcceleration = 0.981;
+function hexToRgb(hex) {
+	var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+	return result
+		? {
+				r: parseInt(result[1], 16),
+				g: parseInt(result[2], 16),
+				b: parseInt(result[3], 16),
+		  }
+		: null
+}
 
-let px2 = 0; 
-let py2 = 0;
+function drawTrails(color) {
+	trails.push([ballB.xPosition, ballB.yPosition])
+	for (let i = 0; i < trails.length; i++) {
+		noStroke();
+		fill(hexToRgb(color).r, hexToRgb(color).g, hexToRgb(color).b, alpha);
+		ellipse(trails[i][0], trails[i][1], 10 / 2);
+		alpha = 100;
+	}
+}
 
-let cx, cy;
+function computeAngularVelocity(ballA, ballB) {
 
-let buffer;
+	let angleA_numerator = -gravity * (2 * ballA.mass + ballB.mass) * sin(ballA.angle) - ballB.mass * gravity * sin(ballA.angle - 2 * ballB.angle) - 2 * sin(ballA.angle - ballB.angle) * ballB.mass * (ballB.angularVelocity * ballB.angularVelocity * ballB.length + ballA.angularVelocity * ballA.angularVelocity * ballA.length * cos(ballA.angle - ballB.angle));
 
+	let angleA_denominator = ballA.length * (2 * ballA.mass + ballB.mass - ballB.mass * cos(2 * ballA.angle - 2 * ballB.angle));
+	let angularAcceleration1 = angleA_numerator / angleA_denominator;
+
+	// ANGULAR VELOCITY B
+	let angle2_numerator = 2 * sin(ballA.angle - ballB.angle) * (ballA.angularVelocity * ballA.angularVelocity * ballA.length * (ballA.mass + ballB.mass) + gravity * (ballA.mass + ballB.mass) * cos(ballA.angle) + ballB.angularVelocity * ballB.angularVelocity * ballB.length * ballB.mass * cos(ballA.angle - ballB.angle));
+
+	let angleB_denominator = ballB.length * (2 * ballA.mass + ballB.mass - ballB.mass * cos(2 * ballA.angle - 2 * ballB.angle));
+	let angularAcceleration2 = angle2_numerator / angleB_denominator;
+
+	ballA.angularVelocity += angularAcceleration1;
+	ballA.angle += ballA.angularVelocity;
+
+	ballB.angularVelocity += angularAcceleration2;
+	ballB.angle += ballB.angularVelocity;
+}
+
+function updateValue(category, value, txtTarget, element) {
+	$(`${category} ${txtTarget}`).html(value)
+	if (category === "#ballA") {
+		switch (element.id) {
+			case "massA":
+				ballA.mass = value;
+				break;
+			case "lengthA":
+				ballA.length = value;
+				break;
+		}
+	} else {
+		switch (element.id) {
+			case "massB":
+				ballB.mass = value;
+				break;
+			case "lengthB":
+				ballB.length = value;
+				break;
+		}
+	}
+	if (element.id === "gravity") {
+		gravity = element.value;
+	}
+}
+
+$(document).ready(function () {
+	let sliderData = []
+	$(document)
+		.find("input")
+		.each((index, element) => {
+			sliderData.push(element.value);
+		})
+	$(document)
+		.find("small")
+		.each((index, element) => {
+			element.innerHTML = sliderData[index];
+		})
+});
 
 function setup() {
-  var pendulumCanvas = createCanvas(800, 800);
-  pendulumCanvas.parent("pendulumCanvas");
-  pixelDensity(1);
-
-  /*
-  For small angles, a pendulum behaves like a linear system (see Simple Pendulum). 
-  When the angles are small in the Double Pendulum, the system behaves like the linear Double Spring.
-
-  This is because the motion is determined by simple sine and cosine functions.
-  For large angles, the pendulum is non-linear and the phase graph becomes much more complex.
-
-  a1 = fixedBarAngle
-  a2 = attachedBarAngle
-  */
-
- 
-
-
-  
-  Change = PI / 180;
-  a1 = 90*Change; 
-  a2 = 90*Change;
-
-
-
-  //if (a2 != 0) {
-  //  a2 = 90*Change;
-  //}
-  //a2 = 90*Change;
-  //endif 
-
-
-
-  //cx, cy - coordinates of origin of the the system of fixed bar
-  cx = width / 2;
-  cy = height / 4;
-
-
-  buffer = createGraphics(width, height);
-  buffer.background(255);
-  buffer.translate(cx, cy);
-
+	canvas = createCanvas($("aside").width(), 800);
+	canvas.parent("p5jsContainer");
+	frameRate(FPS);
+	pixelDensity(1);
 }
 
-
+var ballA = new BallA(10, 100);
+var ballB = new BallB(15, 150);
 
 function draw() {
+	resizeCanvas($("aside").width(), windowHeight);
+	background("#f1f1f1");
 
-  background(175);
-  imageMode(CORNER);
-  image(buffer, 0, 0, width, height);
+	const CENTER = { x: canvas.width / 2, y: canvas.height / 2 }
+	translate(CENTER.x, CENTER.y);
+	stroke(26);
+	strokeWeight(6);
 
-  /*
-    Equation of Motion of the angular acceleration of the fixedBar
-  */
+	// ORIGIN
+	ellipse(0, 0, 10, 10);
 
-  // let num1 = -gravitationalAcceleration * (2 * massFixedObject + massAttachedObject) * math.sin(a1);
-  // let num2 = -massAttachedObject * gravitationalAcceleration * math.sin(a1 - 2 * a2);
-  // let num3 = -2 * math.sin(a1 - a2) * massAttachedObject;
-  // let num4 = angularVelocityAttachedObject * angularVelocityAttachedObject * attachedBar + angularVelocityFixedObject * angularVelocityFixedObject * fixedBar * math.cos(a1 - a2);
-  // let den = fixedBar * (2 * massFixedObject + massAttachedObject - massAttachedObject * math.cos(2 * a1 - 2 * a2));
-  // let angularAccelerationFixedBar = (num1 + num2 + num3 * num4) / den;
+	// DRAW BALL A AND B
+	ballA.draw();
+	ballB.draw(ballA.xPosition, ballA.yPosition);
 
-  // /*
-  //   Equation of Motion of the angular acceleration of the attachedBar
-  // */
- 
-  // num1 = 2 * math.sin(a1 - a2); 
-  // num2 = (angularVelocityFixedObject * angularVelocityFixedObject * fixedBar * (massFixedObject + massAttachedObject));
-  // num3 = gravitationalAcceleration * (massFixedObject + massAttachedObject) * math.cos(a1);
-  // num4 = angularVelocityAttachedObject * angularVelocityAttachedObject * attachedBar * massAttachedObject * math.cos(a1 - a2);
-  // den = attachedBar * (2 * massFixedObject + massAttachedObject - massAttachedObject * math.cos(2 * a1 - 2 * a2));
-  // let angularAccelerationAttachedBar = (num1 * (num2 + num3 + num4)) / den;
+	// TRAILS
+	const isTrailEnabled = $("#trails").is(":checked");
+	if (isTrailEnabled) drawTrails($("#trailColor").val());
 
-  document.getElementById("btn").addEventListener("click", PendulumButton);
+	const isDampingEnabled = $("#damping").is(":checked")
+	if (isDampingEnabled) {
+		ballA.angularVelocity *= 0.9999;
+		ballB.angularVelocity *= 0.9999;
+	}
 
-  var a3 = parseInt(document.getElementById("Theta1").value);
-  var a4 = parseInt(document.getElementById("Theta2").value);
-
-  function PendulumButton() {
-   
-  //alert("This function is being called")
-  // var a3 = parseInt(document.getElementById("Theta1").value);
-  
-  // var a4 = parseInt(document.getElementById("Theta2").value);
-
-  a1 = a3*Change;
-  a2 = a4*Change;
-
-  num1 = -gravitationalAcceleration * (2 * massFixedObject + massAttachedObject) * math.sin(a1);
-  num2 = -massAttachedObject * gravitationalAcceleration * math.sin(a1 - 2 * a2);
-  num3 = -2 * math.sin(a1 - a2) * massAttachedObject;
-  num4 = angularVelocityAttachedObject * angularVelocityAttachedObject * attachedBar + angularVelocityFixedObject * angularVelocityFixedObject * fixedBar * math.cos(a1 - a2);
-  den = fixedBar * (2 * massFixedObject + massAttachedObject - massAttachedObject * math.cos(2 * a1 - 2 * a2));
-  angularAccelerationFixedBar = (num1 + num2 + num3 * num4) / den;
-
-  num1 = 2 * math.sin(a1 - a2); 
-  num2 = (angularVelocityFixedObject * angularVelocityFixedObject * fixedBar * (massFixedObject + massAttachedObject));
-  num3 = gravitationalAcceleration * (massFixedObject + massAttachedObject) * math.cos(a1);
-  num4 = angularVelocityAttachedObject * angularVelocityAttachedObject * attachedBar * massAttachedObject * math.cos(a1 - a2);
-  den = attachedBar * (2 * massFixedObject + massAttachedObject - massAttachedObject * math.cos(2 * a1 - 2 * a2));
-  angularAccelerationAttachedBar = (num1 * (num2 + num3 + num4)) / den;
-
-
-  // a1 = a3*Change; 
-  // a2 = a4*Change;
-
-  }
-
-
-  if (a3 != null) {
-    a1 = a3*Change; 
-    a2 = a4*Change;
-  } else {
-    a1 = 90*Change
-    a2 = 90*Change;
-
-  }
-  
-  let num1 = -gravitationalAcceleration * (2 * massFixedObject + massAttachedObject) * math.sin(a1);
-  let num2 = -massAttachedObject * gravitationalAcceleration * math.sin(a1 - 2 * a2);
-  let num3 = -2 * math.sin(a1 - a2) * massAttachedObject;
-  let num4 = angularVelocityAttachedObject * angularVelocityAttachedObject * attachedBar + angularVelocityFixedObject * angularVelocityFixedObject * fixedBar * math.cos(a1 - a2);
-  let den = fixedBar * (2 * massFixedObject + massAttachedObject - massAttachedObject * math.cos(2 * a1 - 2 * a2));
-  let angularAccelerationFixedBar = (num1 + num2 + num3 * num4) / den;
-
-  /*
-    Equation of Motion of the angular acceleration of the attachedBar
-  */
- 
-  num1 = 2 * math.sin(a1 - a2); 
-  num2 = (angularVelocityFixedObject * angularVelocityFixedObject * fixedBar * (massFixedObject + massAttachedObject));
-  num3 = gravitationalAcceleration * (massFixedObject + massAttachedObject) * math.cos(a1);
-  num4 = angularVelocityAttachedObject * angularVelocityAttachedObject * attachedBar * massAttachedObject * math.cos(a1 - a2);
-  den = attachedBar * (2 * massFixedObject + massAttachedObject - massAttachedObject * math.cos(2 * a1 - 2 * a2));
-  let angularAccelerationAttachedBar = (num1 * (num2 + num3 + num4)) / den;
-
-  
-
-  translate(cx, cy);
-  stroke(0);
-  strokeWeight(2);
-
-  let x1 = fixedBar * math.sin(a1);
-  let y1 = fixedBar * math.cos(a1);
-
-  let x2 = x1 + attachedBar * math.sin(a2);
-  let y2 = y1 + attachedBar * math.cos(a2);
-
-  line(0, 0, x1, y1);
-  fill(0);
-  ellipse(x1, y1, 10, 10);
-
-  line(x1, y1, x2, y2);
-  fill(0);
-  ellipse(x2, y2, 10, 10);
-
-  angularVelocityFixedObject += angularAccelerationFixedBar;
-  angularVelocityAttachedObject += angularAccelerationAttachedBar;
-  a1 += angularVelocityFixedObject;
-  a2 += angularVelocityAttachedObject;
-
-  angularVelocityFixedObject *= 0.9999; // this is the dampening
-  angularVelocityAttachedObject *= 0.9999;
-
-  buffer.stroke(0);
-  if (frameCount > 1) {
-    buffer.line(px2, py2, x2, y2);
-  }
-
-  px2 = x2; //point being made as pendulum moves - trajectory of motion
-  py2 = y2;
-  
-  //console.log("Values of fixedBar", x1, y1);
-  //console.log("Values of attachedBar", x2, y2);
+	computeAngularVelocity(ballA, ballB);
 }
-
